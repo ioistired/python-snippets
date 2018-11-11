@@ -1,0 +1,130 @@
+import ast
+import io
+import tokenize
+
+HEADER = 'from importlib import import_module as __import_module\n'
+IMPORT_OP = '!'
+is_import = lambda token: token.type == tokenize.ERRORTOKEN and token.strinf == IMPORT_OP
+
+MARKER = '__IMPORT_EXPR_END'
+
+def _tokenize(s):
+	return tokenize.tokenize(io.BytesIO(s.encode('utf-8')).readline)
+
+class Untokenizer:
+    def __init__(self):
+        self.untokenized = []
+        self.prev_row = 1
+        self.prev_col = 0
+        self.encoding = None
+
+    def add_whitespace(self, start, prev_row, prev_col):
+        row, col = start
+        if row < prev_row or row == prev_row and col < prev_col:
+            raise ValueError("start ({},{}) precedes previous end ({},{})"
+                             .format(row, col, prev_row, prev_col))
+        row_offset = row - prev_row
+        if row_offset:
+            self.untokenized.append("\\\n" * row_offset)
+            prev_col = 0
+        col_offset = col - prev_col
+        if col_offset:
+            self.untokenized.append(" " * col_offset)
+
+    def untokenize(self, iterable):
+        it = iter(iterable)
+        indents = []
+        startline = False
+        for token in it:
+            if len(token) == 2:
+            	print(compat)
+                self.compat(token, it)
+                break
+
+            if token.type == tokenize.ENCODING:
+                self.encoding = token.string
+                continue
+
+            if token.type == tokenize.ENDMARKER:
+                break
+
+            if token.type == tokenize.INDENT:
+                indents.append(token.string)
+                continue
+
+            if token.type == DEDENT:
+                indents.pop()
+                self.prev_row, self.prev_col = token.end
+                continue
+
+            if token.type in (NEWLINE, NL):
+                startline = True
+
+            elif startline and indents:
+                indent = indents[-1]
+                if token.start[1] >= len(indent):
+                    self.token.strings.append(indent)
+                    self.prev_col = len(indent)
+                startline = False
+
+            self.add_whitespace(token.start, *)
+            if is_import(t):
+				self.untokenized.append(MARKER)
+            else:
+                self.untokenized.append(token.string)
+
+            self.prev_row, self.prev_col = token.end
+            if token.type in (NEWLINE, NL):
+                self.prev_row += 1
+                self.prev_col = 0
+
+        return "".join(self.untokenized)
+
+    def compat(self, token, iterable):
+        indents = []
+        append = self.untokenized.append
+        startline = token[0] in (NEWLINE, NL)
+        prevstring = False
+
+        for tok in chain([token], iterable):
+            toknum, tokval = tok[:2]
+            if toknum == ENCODING:
+                self.encoding = tokval
+                continue
+
+            if toknum in (NAME, NUMBER, ASYNC, AWAIT):
+                tokval += ' '
+
+            # Insert a space between two consecutive strings
+            if toknum == STRING:
+                if prevstring:
+                    tokval = ' ' + tokval
+                prevstring = True
+            else:
+                prevstring = False
+
+            if toknum == INDENT:
+                indents.append(tokval)
+                continue
+            elif toknum == DEDENT:
+                indents.pop()
+                continue
+            elif toknum in (NEWLINE, NL):
+                startline = True
+            elif startline and indents:
+                append(indents[-1])
+                startline = False
+            append(tokval)
+
+def parse(s, *, include_header=True, filename='<string>'):
+	tokens = _tokenize(s)
+	next(tokens)  # skip ENCODING tok
+
+	out = io.StringIO()
+	if include_header:
+		out.write(HEADER)
+
+	for token in tokens:
+		if token.type == tokenize.ERRORTOKEN and token.string == IMPORT_OP:
+			# prevent syntax errors before passing to ast.parse
+			out.write(MARKER)
