@@ -6,3 +6,4 @@ __pycache__
 .coveragerc
 *.build/
 .pytest_cache/
+a.out
