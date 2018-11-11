@@ -1,0 +1,3 @@
+
+class MyImportantClass:
+	pass
