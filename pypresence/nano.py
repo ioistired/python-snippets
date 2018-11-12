@@ -79,7 +79,7 @@ def parse_args(command_line):
 def replace_home(filename):
 	"""replace $HOME with ~ in the directory and filename"""
 	home = os.path.expanduser('~')
-	return filename.replace(home, '~')
+	return filename.replace(home, '~', 1)
 
 def on_not_running():
 	client.clear()
