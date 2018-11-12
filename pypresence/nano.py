@@ -6,6 +6,7 @@
 
 import getopt
 from getpass import getuser
+import operator
 import os.path
 import subprocess
 import sys
@@ -36,13 +37,15 @@ while True:
 def get_nano_processes():
 	user = getuser()
 	try:
-		return tuple(filter(
-			lambda process: process.username() == user,
-			map(
-				lambda line: psutil.Process(int(line.split()[0])),
-				subprocess.check_output(['pidof', 'nano']).splitlines())))
+		return sorted(
+			filter(
+				lambda process: process.username() == user,
+				map(
+					lambda pid: psutil.Process(int(pid)),
+					subprocess.check_output(['pidof', 'nano']).split())),
+			key=operator.attrgetter('pid'))
 	except (psutil.NoSuchProcess, subprocess.CalledProcessError):
-		return ()
+		return []
 
 def process_info(process):
 	with process.oneshot():
