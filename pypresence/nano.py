@@ -113,7 +113,7 @@ def main():
 			state=filename.ljust(2),  # make sure it's at least 2 chars
 			large_image='nano',
 			large_text='fuck your vimrc',
-			start=round(start_time * 1000))
+			start=start_time)
 		time.sleep(DELAY)
 
 if __name__ == '__main__':
