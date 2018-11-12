@@ -8,6 +8,7 @@ print('#include <stdio.h>')
 # https://en.wikipedia.org/wiki/Brainfuck#Commands
 print('char array[30000] = {0};')
 print('char *ptr=array;')
+print('int main(void) {')
 toke1s = {
 	'>': '++ptr;',
 	'<': '--ptr;',
@@ -19,6 +20,7 @@ toke1s = {
 	']': '}'}
 
 for line in sys.stdin:
-	for toke1, bf_toke1 in toke1s.items():
-		line = line.replace(toke1, bf_toke1)
-	print(line)
+	for char in line:
+		print(toke1s.get(char, ''))
+
+print('return 0;}')
