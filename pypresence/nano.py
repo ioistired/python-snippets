@@ -47,8 +47,7 @@ def get_nano_processes():
 def process_info(process):
 	with process.oneshot():
 		running = process.is_running()
-		# for some reason my laptop's unix time isn't in UTC??
-		start_time = process.create_time()
+		start_time = round(process.create_time() * 1000)
 		cwd = process.cwd()
 		command_line = process.cmdline()
 
@@ -113,7 +112,8 @@ def main():
 			details='Viewing a file' if view_mode else 'Editing a file',
 			state=filename.ljust(2),  # make sure it's at least 2 chars
 			large_image='nano',
-			large_text='fuck your vimrc')
+			large_text='fuck your vimrc',
+			start=round(start_time * 1000))
 		time.sleep(DELAY)
 
 if __name__ == '__main__':
