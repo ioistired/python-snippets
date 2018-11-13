@@ -6,6 +6,7 @@
 
 import getopt
 from getpass import getuser
+import operator
 import os.path
 import subprocess
 import sys
@@ -36,19 +37,20 @@ while True:
 def get_nano_processes():
 	user = getuser()
 	try:
-		return tuple(filter(
-			lambda process: process.username() == user,
-			map(
-				lambda line: psutil.Process(int(line.split()[0])),
-				subprocess.check_output(['pidof', 'nano']).splitlines())))
+		return sorted(
+			filter(
+				lambda process: process.username() == user,
+				map(
+					lambda pid: psutil.Process(int(pid)),
+					subprocess.check_output(['pidof', 'nano']).split())),
+			key=operator.attrgetter('pid'))
 	except (psutil.NoSuchProcess, subprocess.CalledProcessError):
-		return ()
+		return []
 
 def process_info(process):
 	with process.oneshot():
 		running = process.is_running()
-		# for some reason my laptop's unix time isn't in UTC??
-		start_time = process.create_time()
+		start_time = round(process.create_time() * 1000)
 		cwd = process.cwd()
 		command_line = process.cmdline()
 
@@ -80,7 +82,7 @@ def parse_args(command_line):
 def replace_home(filename):
 	"""replace $HOME with ~ in the directory and filename"""
 	home = os.path.expanduser('~')
-	return filename.replace(home, '~')
+	return filename.replace(home, '~', 1)
 
 def on_not_running():
 	client.clear()
@@ -113,7 +115,8 @@ def main():
 			details='Viewing a file' if view_mode else 'Editing a file',
 			state=filename.ljust(2),  # make sure it's at least 2 chars
 			large_image='nano',
-			large_text='fuck your vimrc')
+			large_text='fuck your vimrc',
+			start=start_time)
 		time.sleep(DELAY)
 
 if __name__ == '__main__':
