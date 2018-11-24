@@ -11,9 +11,9 @@ try:
 	import builtins
 except ImportError:
 	# py 2 compat for the memes
-	import __builtins__
-	builtins = __builtins__
-	del __builtins__
+	import __builtin__
+	builtins = __builtin__
+	del __builtin__
 
 if sys.version_info[0] >= 3:
 	def get_frame_function_name(f):
