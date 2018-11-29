@@ -1,0 +1,23 @@
+M = x -> x (x)
+
+Y = f -> M (x -> f (x (x)))
+# eta-expand the x(x) to support eagerly evaluated langs like Python
+Z = f -> M (x -> f (v -> x (x) (v)))
+
+fact = Z (
+	f_ -> x -> 1 if x == 0 else x * f_(x-1))
+
+# expanded:
+# substitute f for the fact defn
+#fact = M (x -> (f_ -> x -> 1 if x == 0 else x * f_(x-1)) (v -> x (x) (v)))
+# apply the fact defn to the eta-expanded M 
+#fact = M (x -> v -> M(f_ -> x -> 1 if x == 0 else x * f_(x-1)))
+# this is hard lol
+# TODO finish expansion (it's v repetitive)
+# maybe it'll be easier to evaluate with the Y comb instead of Z
+# so try it on paper / plaintext
+
+def test():
+	from math import factorial
+
+	assert list(map(fact, range(10))) == [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880]
