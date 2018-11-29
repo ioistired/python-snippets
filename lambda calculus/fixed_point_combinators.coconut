@@ -1,0 +1,29 @@
+M = x -> x(x)
+
+# R for "recursion"
+R = f -> (*args) -> f (f) (*args)
+
+_fact = f -> x -> 1 if x == 0 else x * f (f) (x-1)
+fact = R(_fact) # == x -> 1 if x == 0 else x * _fact (_fact) (x-1)
+
+assert list(map(fact, range(10))) == [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880]
+
+# can i easily get rid of the need for user code to call f twice every time?
+R = f -> (*args) -> f (M (f)) (*args)
+_fact = f -> x -> 1 if x == 0 else x * f (x-1)
+#                                      ^~~~~~~ like the real Y comb
+
+fact = R(_fact) # == x -> 1 if x == 0 else x * _fact (_fact) (x-1)
+
+# assert list(map(fact, range(10))) == [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880]
+
+# sadly this doesnt work
+# "unsupported operand types for '*': 'int' and 'function'"
+
+# what about this?
+fact = _fact(M(_fact))
+
+assert list(map(fact, range(10))) == [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880]
+
+# same error :(
+# guess i have to learn the real Y comb...
