@@ -9,5 +9,15 @@ class Foo:
 	def baz(self):
 		return __class__
 
-print(Foo().bar())
-print(Foo().baz())
+	def quux(self):
+		return '__class__' in locals()
+
+	def waldo(self):
+		# maybe accessing it from locals twice brings it in scope the second time
+		return '__class__' in locals(), '__class__' in locals()
+
+x = Foo()
+for meth in x.bar, x.baz, x.quux, x.waldo:
+	print(meth())
+
+# output: Foo, Foo, False, (False, False)
