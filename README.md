@@ -10,4 +10,7 @@ To the extent possible under law,
 Benjamin Mintz has waived all copyright and related or neighboring rights to these snippets.
 This work is published from: United States.
 
-https://creativecommons.org/publicdomain/zero/1.0/legalcode
+For the full legal code, see https://creativecommons.org/publicdomain/zero/1.0/legalcode.
+
+The copyright ownership of some of these files is not mine.
+Appropriate attribution is included within each such file.
