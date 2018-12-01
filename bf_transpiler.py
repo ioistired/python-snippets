@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
+import string
 import sys
 
 
@@ -19,8 +20,11 @@ toke1s = {
 	'[': 'while (*ptr) {',
 	']': '}'}
 
+# allow whitespace to pass through for readability
+toke1s.update({c: c for c in string.whitespace})
+
 for line in sys.stdin:
 	for char in line:
-		print(toke1s.get(char, ''))
+		print(toke1s.get(char, ''), end='')
 
 print('return 0;}')
