@@ -12,13 +12,13 @@ from numbers import Integral as _Integral, Real as _Real
 import operator as _operator
 
 class Time:
-	__slots__ = ('_hours', '_minutes', '_seconds')
+	__slots__ = ('hours', 'minutes', 'seconds')
 
-	def __new__(cls, hours: int, minutes: _Integral = 0, seconds: float = 0):
+	def __new__(cls, hours: _Integral, minutes: _Integral = 0, seconds: float = 0):
 		self = super().__new__(cls)
-		self._hours = hours
-		self._minutes = minutes
-		self._seconds = seconds
+		super(cls, self).__setattr__('hours', hours)
+		super(cls, self).__setattr__('minutes', minutes)
+		super(cls, self).__setattr__('seconds', seconds)
 
 		return self
 
@@ -75,14 +75,7 @@ class Time:
 		t = self.normalize()
 		return hash((t.hours, t.minutes, t.seconds))
 
-	@property
-	def hours(self):
-		return self._hours
+	def __setattr__(self, name, *_):
+		raise TypeError(f'{type(self).__qualname__} objects are immutable')
 
-	@property
-	def minutes(self):
-		return self._minutes
-
-	@property
-	def seconds(self):
-		return self._seconds
+	__delattr__ = __setattr__
