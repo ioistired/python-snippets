@@ -5,5 +5,5 @@ class NoisySetattr:
 	def __setattr__(self, name, value):
 		print(f'self.{name} = {value}')
 
-for i, NoisySetattr().x in enumerate('hello'):
+for NoisySetattr().x in 'hello':
 	pass
