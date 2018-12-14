@@ -5,11 +5,8 @@ import typing
 
 def rstrip_in_place(xs: typing.List[typing.T], predicate: typing.Callable[[typing.T], bool]) -> None:
 	"""remove elements from the right of xs until predicate no longer holds"""
-	while predicate(xs[-1]):
-		try:
-			xs.pop()
-		except IndexError:
-			return
+	while xs and predicate(xs[-1]):
+		xs.pop()
 
 def rstrip(xs: typing.List[typing.T], predicate: typing.Callable[[typing.T], bool]) -> typing.List[typing.T]:
 	copied = xs.copy()
