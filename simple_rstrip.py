@@ -17,6 +17,8 @@ def test():
 	assert rstrip([5, 4, 3, 0, False], lambda x: not x) == [5, 4, 3]
 	assert rstrip([5, 4, 3], lambda x: not x) == [5, 4, 3]
 	assert rstrip(list('foo bar  \n'), str.isspace) == list('foo bar')
+	assert rstrip(list('foo bar'), str.isspace) == list('foo bar')
+	assert rstrip(list(''), str.isspace) == list('')
 
 if __name__ == '__main__':
 	test()
