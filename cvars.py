@@ -2,14 +2,10 @@
 # encoding: utf-8
 
 import asyncio
+import contextvars
 
-import aiocontextvars
-
-x = aiocontextvars.ContextVar('x')
+x = contextvars.ContextVar('x')
 x.set(0)
-
-loop = asyncio.get_event_loop()
-aiocontextvars.enable_inherit(loop)
 
 async def a():
 	print(x.get())
@@ -22,8 +18,10 @@ async def b():
 	await asyncio.sleep(0)
 	print(x.get())
 
-loop.create_task(a())
-loop.run_until_complete(b())
+if __name__ == '__main__':
+	loop = asyncio.get_event_loop()
+	loop.create_task(a())
+	loop.run_until_complete(b())
 
 # is the output 0 b a ?
 

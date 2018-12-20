@@ -7,15 +7,24 @@ my attempt at doing a four-function time calculator
 maybe use the datetime module instead
 """
 
-import more_itertools as _more_itertools
 from numbers import Integral as _Integral, Real as _Real
 import operator as _operator
 
+from simple_rstrip import rstrip
+
 class Time:
+	"""represents either:
+		- an absolute time of day, such as 23:34:03, or
+		- a duration of time, such as 23 hours, 34 minutes, and 3 seconds
+	"""
+
 	__slots__ = ('hours', 'minutes', 'seconds')
 
-	def __new__(cls, hours: _Integral, minutes: _Integral = 0, seconds: float = 0):
+	def __new__(cls, hours: _Integral = 0, minutes: _Integral = 0, seconds: _Real = 0):
 		self = super().__new__(cls)
+
+		# a silly way to achieve immutability
+		# we do this because our __setattr__ denies access
 		super(cls, self).__setattr__('hours', hours)
 		super(cls, self).__setattr__('minutes', minutes)
 		super(cls, self).__setattr__('seconds', seconds)
@@ -34,7 +43,7 @@ class Time:
 	def __float__(self):
 		return float(self.total_seconds())
 
-	def  normalize(self):
+	def normalize(self):
 		"""return a copy of self where minutes and seconds do not exceed 59
 
 		leap seconds are NOT ALLOWED :<
@@ -63,8 +72,12 @@ class Time:
 
 	def __repr__(self):
 		t = self.normalize()
-		no_trailing_zeroes = _more_itertools.rstrip((t.hours, t.minutes, t.seconds), _operator.not_)
-		args = ', '.join(map(repr, no_trailing_zeroes))
+
+		# Time(5, 4, 0) -> Time(5, 4)
+		# Time(0, 0, 0) -> Time()
+		no_trailing_zeros = rstrip([t.hours, t.minutes, t.seconds], lambda x: x == 0)
+
+		args = ', '.join(map(repr, no_trailing_zeros))
 		return f'{type(self).__qualname__}({args})'
 
 	def __str__(self):
