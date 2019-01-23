@@ -1,0 +1,35 @@
+🐍 ureg = pint!.UnitRegistry()
+🐍 ureg.define('cord = 128 * ft^3')
+🐍 ureg.define('facecord = 1/3*cord')
+🐍 cord, facecord = ureg.cord, ureg.facecord
+🐍 cord
+<Unit('cord')>
+🐍 from fractions import Fraction
+🐍 meter = ureg.meter
+🐍 moms_purchase = (Fraction('3/4') * facecord)
+🐍 moms_purchase.to_base_units()
+<Quantity(36245563637759991/40000000000000000, 'meter ** 3')>
+🐍 print(_)
+36245563637759991/40000000000000000 meter ** 3
+🐍 print(moms_purchase.to_base_units())
+36245563637759991/40000000000000000 meter ** 3
+🐍 ft = ureg.feet
+🐍 print(moms_purchase.to(ft ** 3))
+15999999999999999/500000000000000 foot ** 3
+🐍 print(moms_purchase.to(ft ** 3)).dimension
+15999999999999999/500000000000000 foot ** 3
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'NoneType' object has no attribute 'dimension'
+🐍 moms_purchase.to(ft ** 3).magnitude
+Fraction(15999999999999999, 500000000000000)
+🐍 float(_)
+31.999999999999996
+🐍 moms_purchase = 3/4 * facecord
+🐍 print(moms_purchase.to(ft**3))
+32.0 foot ** 3
+🐍 print(moms_purchase.to_base_units())
+0.9061390909439997 meter ** 3
+🐍 print(moms_purchase)
+0.75 facecord
+🐍
