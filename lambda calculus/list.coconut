@@ -1,0 +1,37 @@
+false = K = x -> y -> x
+I = x -> x
+true = K(I)
+
+pair = a -> b -> f -> f (a) (b)
+fst = p -> p (false)
+snd = p -> p (true)
+
+nil = pair (true) (true)
+is_nil = fst
+cons = x -> l -> pair (false) (pair (x) (l))
+head = xs -> fst (snd (xs))
+tail = xs -> snd (snd (xs))
+
+def church_boolean(x):
+	return true if x else false
+
+def py_boolean(x):
+	return x (False) (True)
+
+def church_list(xs):
+	churched = nil
+	for x in reversed(list(xs)):
+		churched = cons (x) (churched)
+	return churched
+
+def py_list(xs):
+	result = []
+	while not py_boolean(is_nil(xs)):
+		result.append(head(xs))
+		xs = tail(xs)
+	return result
+
+if_ = p -> then -> else_ -> p (else_) (then)
+
+fix = f -> x -> f (f) (x)
+map = fixed -> f -> xs -> if_ (is_nil (xs)) (nil) (fixed (fixed) (f) (xs))
