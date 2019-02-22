@@ -117,7 +117,7 @@ def main():
 			details='Viewing a file' if view_mode else 'Editing a file',
 			state=filename.ljust(2),  # make sure it's at least 2 chars
 			large_image='nano',
-			large_text='fuck your vimrc',
+			large_text="tfw can't be bothered to learn something better",
 			start=start_time)
 		time.sleep(DELAY)
 
