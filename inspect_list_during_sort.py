@@ -18,6 +18,3 @@ def sort_key_peeker(x):
 
 l.sort(key=sort_key_peeker)
 # prints [] 10 times
-
-
-## TODO attempt mutate during sort
