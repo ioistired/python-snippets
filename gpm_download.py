@@ -1,3 +1,5 @@
+# i don't remember where i got this file. Copyright status unknown.
+
 from gmusicapi.clients import Mobileclient
 import urllib.request
 import taglib
