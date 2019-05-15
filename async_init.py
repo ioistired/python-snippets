@@ -10,10 +10,9 @@ def async_init(cls):
 
 	@functools.wraps(__new__)
 	async def new(cls, *args, **kwargs):
-		result = __new__(cls, *args, **kwargs)
-
-		await result.__init__(*args, **kwargs)
-		return result
+		self = __new__(cls, *args, **kwargs)
+		await self.__init__(*args, **kwargs)
+		return self
 
 	cls.__new__ = new
 	return cls
