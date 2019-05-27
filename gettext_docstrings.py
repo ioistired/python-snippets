@@ -5,8 +5,13 @@ import inspect
 
 def i18n_docstring(func):
 	src = inspect.getsource(func)
-	orig_tree = ast.parse(src)
-	tree = orig_tree.body[0]  # the FunctionDef
+	try:
+		tree = ast.parse(src)
+	except IndentationError:
+		tree = ast.parse('class Foo:\n' + src)
+		tree = tree.body[0].body[0]  # ClassDef -> FunctionDef
+	else:
+		tree = tree.body[0]  # FunctionDef
 
 	if not isinstance(tree.body[0], ast.Expr):
 		return func
@@ -22,10 +27,12 @@ def i18n_docstring(func):
 	assert isinstance(tree.args[0], ast.Str)
 
 	func.__doc__ = tree.args[0].s
-	orig_tree.body[0] = ast.Pass()
 	return func
 
+def id(x): return x
+
 @i18n_docstring
+@id  # make sure it works with decos
 def foo():
 	_("""do a thing
 
@@ -43,10 +50,21 @@ def baz():
 	"""frobnicate the quux machine"""
 	return 3
 
+class Quux:
+	@i18n_docstring
+	@id
+	def waldo(self):
+		_("""hi
+
+		bye
+		""")
+		return 0
+
 def test():
 	assert foo.__doc__.startswith('do a thing')
 	assert bar.__doc__ is None
 	assert baz.__doc__.startswith('frobnicate')
+	assert Quux.waldo.__doc__.startswith('hi')
 
 if __name__ == '__main__':
 	test()
