@@ -60,11 +60,18 @@ class Quux:
 		""")
 		return 0
 
+_ = id
+
+@i18n_docstring
+class Garply:
+	_('fred')
+
 def test():
 	assert foo.__doc__.startswith('do a thing')
 	assert bar.__doc__ is None
 	assert baz.__doc__.startswith('frobnicate')
 	assert Quux.waldo.__doc__.startswith('hi')
+	assert Garply.__doc__ == 'fred'
 
 if __name__ == '__main__':
 	test()
