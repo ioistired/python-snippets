@@ -53,7 +53,7 @@ def baz():
 class Quux:
 	@i18n_docstring
 	@id
-	def waldo(self):
+	def garply(self):
 		_("""hi
 
 		bye
@@ -63,15 +63,23 @@ class Quux:
 _ = id
 
 @i18n_docstring
-class Garply:
-	_('fred')
+class Waldo:
+	_('hi')
+
+def fred():
+	@i18n_docstring
+	def fred():
+		_('hi sorry ran out of names here')
+		return fred
+	return fred
 
 def test():
 	assert foo.__doc__.startswith('do a thing')
 	assert bar.__doc__ is None
 	assert baz.__doc__.startswith('frobnicate')
-	assert Quux.waldo.__doc__.startswith('hi')
-	assert Garply.__doc__ == 'fred'
+	assert Quux.garply.__doc__.startswith('hi')
+	assert Waldo.__doc__ == 'hi'
+	assert fred().__doc__.startswith('hi')
 
 if __name__ == '__main__':
 	test()
