@@ -20,6 +20,15 @@ def set_connection(connection):
 def get_connection():
 	return CONNECTION
 
+
+# please deduplicate this decorator as much as possible
+# rules: you may use the entire stdlib from 3.7 and even third party modules
+# (although my solution doesn't require any additional imports than what's written)
+#
+# you should ideally deduplicate the two async for loops and the two `return await`s as well,
+# though this is not strictly necessary (my solution does)
+#
+# don't worry about the rest of the code, just make sure the output is the same when you run this file
 def wrap(func):
 	if inspect.isasyncgenfunction(func):
 		async def inner(*args, **kwargs):
