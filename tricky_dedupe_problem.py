@@ -2,21 +2,6 @@
 
 import inspect
 
-class pool:
-	def __enter__(self):
-		return 'connection'
-	def __exit__(self, *excinfo):
-		print('the connection is now closed')
-
-CONNECTION = None
-
-def set_connection(connection):
-	global CONNECTION
-	CONNECTION = connection
-
-def get_connection():
-	return CONNECTION
-
 # please deduplicate this decorator as much as possible
 # rules: you may use the entire stdlib from 3.3+ and even third party modules
 # (although my solution uses no more than one import from the stdlib)
@@ -25,6 +10,7 @@ def get_connection():
 # though this is not strictly necessary (my solution does)
 #
 # don't worry about the rest of the code, just make sure the output is the same when you run this file
+
 def wrap(func):
 	if inspect.isgeneratorfunction(func):
 		def inner(*args, **kwargs):
@@ -50,6 +36,21 @@ def wrap(func):
 				return func(*args, **kwargs)
 
 	return inner
+
+class pool:
+	def __enter__(self):
+		return 'connection'
+	def __exit__(self, *excinfo):
+		print('the connection is now closed')
+
+CONNECTION = None
+
+def set_connection(connection):
+	global CONNECTION
+	CONNECTION = connection
+
+def get_connection():
+	return CONNECTION
 
 @wrap
 def gen(a, b):
