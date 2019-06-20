@@ -57,26 +57,17 @@ def wrap(func):
 
 awaitable = lambda x: asyncio.sleep(0, x)
 
-class WasteOfSpace:
-	def __init__(self, *args):
-		self.args = args
-		self.index = -1
-
-	def __aiter__(self):
-		return self
-
-	def __anext__(self):
-		self.index += 1
-		if self.index >= len(self.args):
-			raise StopAsyncIteration
-		return self.args[self.index]
+async def aiter(iterable):
+	await asyncio.sleep(0)  # to make this into an async gen
+	for x in iterable:
+		yield x
 
 @wrap
 async def agen(a, b):
 	print("agen")
 	print(' ', a, b)
 	print(' ', get_connection())
-	async for i in WasteOfSpace(awaitable("a"), awaitable("b")):
+	async for i in aiter([awaitable("a"), awaitable("b")]):
 		yield i
 
 @wrap
