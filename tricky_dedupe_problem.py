@@ -6,8 +6,6 @@ import inspect
 # rules: you may use the entire stdlib from 3.3+ and even third party modules
 # (although my solution uses no more than one import from the stdlib)
 #
-# you may not change the try-except-else code itself, nor remove the `with pool()` or connection setting code
-#
 # you should ideally deduplicate the two for loops and the two `return func(...)`s as well,
 # though this is not strictly necessary (my solution does)
 #
