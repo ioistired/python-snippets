@@ -15,7 +15,8 @@ def wrap(func):
 	if inspect.isgeneratorfunction(func):
 		def inner(*args, **kwargs):
 			try:
-				1/0
+				if not get_connection():
+					1/0
 			except ZeroDivisionError:
 				with pool() as conn:
 					set_connection(conn)
@@ -27,7 +28,8 @@ def wrap(func):
 	else:
 		def inner(*args, **kwargs):
 			try:
-				1/0
+				if not get_connection():
+					1/0
 			except ZeroDivisionError:
 				with pool() as conn:
 					set_connection(conn)
@@ -41,6 +43,7 @@ class pool:
 	def __enter__(self):
 		return 'connection'
 	def __exit__(self, *excinfo):
+		set_connection(None)
 		print('the connection is now closed')
 
 CONNECTION = None
@@ -67,9 +70,19 @@ def func(a, b):
 	print(" ", get_connection())
 	return "blah"
 
+@wrap
+def both(a, b):
+	print("both")
+	print(" ", a, b)
+	for x in gen(a, b):
+		pass
 
-if __name__ == '__main__':
+	func(a, b)
+
+if __name__ == "__main__":
 	for x in gen(1, 2):
 		pass
 
 	func(3, 4)
+
+	both(5, 6)
