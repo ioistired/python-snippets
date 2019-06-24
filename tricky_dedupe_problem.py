@@ -1,88 +1,99 @@
 #!/usr/bin/env python3
 
+import contextvars
 import inspect
 
+import asyncpg
+
+connection = contextvars.ContextVar('connection')
+
 # please deduplicate this decorator as much as possible
-# rules: you may use the entire stdlib from 3.3+ and even third party modules
-# (although my solution uses no more than one import from the stdlib)
+# rules: you may use the entire stdlib from 3.7+ and even third party modules
+# (although my solution uses no additional imports)
 #
-# you should ideally deduplicate the two for loops and the two `return func(...)`s as well,
+# you should ideally deduplicate the two async for loops and the two `return await func(...)`s as well,
 # though this is not strictly necessary (my solution does)
 #
-# don't worry about the rest of the code, just make sure the output is the same when you run this file
+# don't worry about the rest of the code, just make sure the output and behavior are the same when you run this file
 
 def wrap(func):
-	if inspect.isgeneratorfunction(func):
-		def inner(*args, **kwargs):
+	if inspect.isasyncgenfunction(func):
+		async def inner(*args, **kwargs):
 			try:
-				if not get_connection():
-					1/0
-			except ZeroDivisionError:
-				with pool() as conn:
-					set_connection(conn)
-					for x in func(*args, **kwargs):
+				connection.get().is_closed()
+			except (asyncpg.InterfaceError, LookupError):
+				async with pool.acquire() as conn:
+					connection.set(conn)
+					async for x in func(*args, **kwargs):
 						yield x
 			else:
-				for x in func(*args, **kwargs):
+				async for x in func(*args, **kwargs):
 					yield x
 	else:
-		def inner(*args, **kwargs):
+		async def inner(*args, **kwargs):
 			try:
-				if not get_connection():
-					1/0
-			except ZeroDivisionError:
-				with pool() as conn:
-					set_connection(conn)
-					return func(*args, **kwargs)
+				connection.get().is_closed()
+			except (asyncpg.InterfaceError, LookupError):
+				async with pool.acquire() as conn:
+					connection.set(conn)
+					return await func(*args, **kwargs)
 			else:
-				return func(*args, **kwargs)
+				return await func(*args, **kwargs)
 
 	return inner
 
-class pool:
-	def __enter__(self):
-		return 'connection'
-	def __exit__(self, *excinfo):
-		set_connection(None)
-		print('the connection is now closed')
-
-CONNECTION = None
-
-def set_connection(connection):
-	global CONNECTION
-	CONNECTION = connection
-
-def get_connection():
-	return CONNECTION
-
 @wrap
-def gen(a, b):
+async def gen(a, b):
 	print("gen")
 	print(" ", a, b)
-	print(" ", get_connection())
-	for x in "ab":
-		yield x
+	async with connection.get().transaction():
+		async for a, b in connection.get().cursor('VALUES (1, 2), (3, 4)'):
+			yield a, b
 
 @wrap
-def func(a, b):
+async def func(a, b):
 	print("func")
 	print(" ", a, b)
-	print(" ", get_connection())
-	return "blah"
+	return await connection.get().fetchval('SELECT 1')
 
 @wrap
-def both(a, b):
+async def both(a, b):
 	print("both")
 	print(" ", a, b)
-	for x in gen(a, b):
+	async for x in gen(a, b):
 		pass
 
-	func(a, b)
+	await func(a, b)
+
+async def main():
+	import sys
+	global pool
+	try:
+		pool = await asyncpg.create_pool(sys.argv[1])
+	except IndexError:
+		print('Usage:', sys.argv[0], '<asyncpg connection URL>', file=sys.stderr)
+		sys.exit(0)  # no args were provided, so give help
+
+	async for x in gen(1, 2):
+		pass
+
+	conn = connection.get()
+
+	await func(3, 4)
+
+	assert connection.get() is not conn
+
+	async with pool.acquire() as conn:
+		connection.set(conn)
+		await func(5, 6)
+		assert connection.get() is conn
+		await func(7, 8)
+		assert connection.get() is conn
+
+	await both(9, 10)
+
+	assert connection.get() is not conn
 
 if __name__ == "__main__":
-	for x in gen(1, 2):
-		pass
-
-	func(3, 4)
-
-	both(5, 6)
+	import asyncio
+	asyncio.run(main())
