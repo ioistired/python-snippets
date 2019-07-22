@@ -2,17 +2,20 @@
 # encoding: utf-8
 
 import asyncio
+import types
 
 loop = asyncio.get_event_loop()
 
+sleep0 = types.coroutine(lambda: (x for x in (None,)))
+
 async def a():
 	print('enter a')
-	await asyncio.sleep(0)
+	await sleep0()
 	print('leave a')
 
 async def b():
 	print('enter b')
-	await asyncio.sleep(0)
+	await sleep0()
 	print('leave b')
 
 loop.create_task(a())
