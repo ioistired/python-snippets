@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# created because a recent Everybody Votes Channel poll was
+# "were you born on an odd or even day?" and I wanted to make the more likely prediction
+# (falsely assuming birthdays are evenly distributed...)
+
 import datetime
 
 c = [0, 0]
