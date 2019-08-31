@@ -30,37 +30,40 @@ class QueryExtension(ext.Extension):
 			[]  # orelse
 		).set_lineno(lineno)
 
-queries = jinja2.Environment(
-	loader=jinja2.FileSystemLoader('.'),
-	trim_blocks=True,
-	line_statement_prefix='-- :',
-	extensions=[QueryExtension, QueryBlockExtension],
-).get_template('queries.sql').module
+def main():
+	queries = jinja2.Environment(
+		loader=jinja2.FileSystemLoader('.'),
+		trim_blocks=True,
+		line_statement_prefix='-- :',
+		extensions=[QueryExtension],
+	).get_template('queries.sql').module
 
-class Queries:
-	pass
+	class Queries:
+		pass
 
-new_queries = Queries()
+	new_queries = Queries()
 
-for name, val in vars(queries).items():
-	if not callable(val):
-		vars(new_queries)[name] = val
-		continue
+	for name, val in vars(queries).items():
+		if not callable(val):
+			vars(new_queries)[name] = val
+			continue
 
-	def wrapped(*blocks, _val=val):
-		return _val(frozenset(blocks))
+		def wrapped(*blocks, _val=val):
+			return _val(frozenset(blocks))
 
-	wrapped.__name__ = name
-	vars(new_queries)[name] = wrapped
+		wrapped.__name__ = name
+		vars(new_queries)[name] = wrapped
 
-queries = new_queries
-del name, val, wrapped, new_queries
+	queries = new_queries
 
-print('---- no blocks ----')
-print(queries.users())
-print('---- login_history ----')
-print(queries.users('login_history'))
-print('---- profiles ----')
-print(queries.users('profiles'))
-print('---- all three ----')
-print(queries.users('login_history', 'profiles', 'user_id'))
+	print('---- no blocks ----')
+	print(queries.users())
+	print('---- login_history ----')
+	print(queries.users('login_history'))
+	print('---- profiles ----')
+	print(queries.users('profiles'))
+	print('---- all three ----')
+	print(queries.users('login_history', 'profiles', 'user_id'))
+
+if __name__ == '__main__':
+	main()
