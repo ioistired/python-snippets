@@ -37,11 +37,30 @@ queries = jinja2.Environment(
 	extensions=[QueryExtension, QueryBlockExtension],
 ).get_template('queries.sql').module
 
-print(queries.users)
+class Queries:
+	pass
+
+new_queries = Queries()
+
+for name, val in vars(queries).items():
+	if not callable(val):
+		vars(new_queries)[name] = val
+		continue
+
+	def wrapped(*blocks, _val=val):
+		return _val(frozenset(blocks))
+
+	wrapped.__name__ = name
+	vars(new_queries)[name] = wrapped
+
+queries = new_queries
+del name, val, wrapped, new_queries
+
+print('---- no blocks ----')
 print(queries.users())
 print('---- login_history ----')
-print(queries.users({'login_history'}))
+print(queries.users('login_history'))
 print('---- profiles ----')
-print(queries.users({'profiles'}))
+print(queries.users('profiles'))
 print('---- all three ----')
-print(queries.users({'login_history', 'profiles', 'user_id'}))
+print(queries.users('login_history', 'profiles', 'user_id'))
