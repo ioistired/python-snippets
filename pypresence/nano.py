@@ -61,10 +61,10 @@ def parse_args(command_line):
 	try:
 		opts, args = getopt.gnu_getopt(
 			command_line[1:],
-			# short options from nano.c line 2094 at commit fe3a72ce3ea66a568acfdc31ede3b136a20612c9
-			'ABC:DEFGHIKLMNOPQ:RST:UVWX:Y:abcdefghijklmno:pqr:s:tuvwxyz$',
-			# long options from nano.c line 1964 at commit fe3a72ce3ea66a568acfdc31ede3b136a20612c9
-			('boldtext', 'multibuffer', 'ignorercfiles', 'rebindkeypad', 'nonewlines', 'trimblanks', 'morespace', 'quotestr=', 'restricted', 'tabsize=', 'quickblank', 'version', 'syntax=', 'constantshow', 'rebinddelete', 'showcursor', 'help', 'linenumbers', 'mouse', 'noread', 'operatingdir=', 'preserve', 'quiet', 'fill=', 'speller=', 'tempfile', 'view', 'nowrap', 'nohelp', 'suspend', 'smarthome', 'backup', 'backupdir=', 'tabstospaces', 'locking', 'historylog', 'noconvert', 'positionlog', 'smooth', 'wordbounds', 'wordchars=', 'atblanks', 'autoindent', 'cutfromcursor', 'unix', 'afterends', 'softwrap'),
+			# short options from nano.c line 2039 at commit 7d9ad31cd96cd414d76031d027ee1e194a599858
+			'ABC:DEFGHIJ:KLMNOPQ:RST:UVWX:Y:Zabcdeghijklmno:pr:s:tuvwxyz$',
+			# long options from nano.c line 1904 at commit 7d9ad31cd96cd414d76031d027ee1e194a599858
+			('afterends', 'atblanks', 'autoindent', 'backup', 'backupdir', 'boldtext', 'breaklonglines', 'constantshow', 'cutfromcursor', 'emptyline', 'fill', 'guidestripe', 'help', 'historylog', 'ignorercfiles', 'jumpyscrolling', 'linenumbers', 'locking', 'morespace', 'mouse', 'multibuffer', 'noconvert', 'nohelp', 'nonewlines', 'noread', 'nowrap', 'operatingdir', 'positionlog', 'preserve', 'quickblank', 'quotestr', 'rawsequences', 'rebinddelete', 'restricted', 'showcursor', 'smarthome', 'smooth', 'softwrap', 'speller', 'suspend', 'syntax', 'tabsize', 'tabstospaces', 'tempfile', 'trimblanks', 'unix', 'version', 'view', 'wordbounds', 'wordchars', 'zap'),
 		)
 	except getopt.GetoptError:
 		# invalid argument
