@@ -6,20 +6,19 @@ from jinja2 import ext
 from jinja2 import nodes
 
 class QueryExtension(ext.Extension):
-	tags = {'query'}
+	tags = {'query', 'qblock'}
 
 	def parse(self, parser):
-		lineno = next(parser.stream).lineno
+		token = next(parser.stream)
+		return (self._parse_query if token.value == 'query' else self._parse_qblock)(parser, token.lineno)
+
+	def _parse_query(self, parser, lineno):
 		name = parser.parse_assign_target(with_tuple=False).name
 		body = parser.parse_statements(['name:endquery'], drop_needle=True)
 		# name, params, defaults, body
 		return nodes.Macro(name, [nodes.Name('__blocks__', 'param')], [], body).set_lineno(lineno)
 
-class QueryBlockExtension(jinja2.ext.Extension):
-	tags = {'qblock'}
-
-	def parse(self, parser):
-		lineno = next(parser.stream).lineno
+	def _parse_qblock(self, parser, lineno):
 		name = parser.parse_assign_target(name_only=True).name
 		body = parser.parse_statements(['name:endqblock'], drop_needle=True)
 		return nodes.If(
@@ -28,7 +27,8 @@ class QueryBlockExtension(jinja2.ext.Extension):
 				[nodes.Operand('in', nodes.Name('__blocks__', 'load'))]),
 			body,
 			[],  # elif_
-			[])  # orelse
+			[]  # orelse
+		).set_lineno(lineno)
 
 queries = jinja2.Environment(
 	loader=jinja2.FileSystemLoader('.'),
