@@ -5,9 +5,6 @@ import jinja2.parser
 from jinja2 import ext
 from jinja2 import nodes
 
-del jinja2.parser.Parser.parse_block
-jinja2.parser._statement_keywords -= {'block'}
-
 class QueryExtension(ext.Extension):
 	tags = {'query'}
 
@@ -19,12 +16,12 @@ class QueryExtension(ext.Extension):
 		return nodes.Macro(name, [nodes.Name('__blocks__', 'param')], [], body).set_lineno(lineno)
 
 class QueryBlockExtension(jinja2.ext.Extension):
-	tags = {'block'}
+	tags = {'qblock'}
 
 	def parse(self, parser):
 		lineno = next(parser.stream).lineno
 		name = parser.parse_assign_target(name_only=True).name
-		body = parser.parse_statements(['name:endblock'], drop_needle=True)
+		body = parser.parse_statements(['name:endqblock'], drop_needle=True)
 		return nodes.If(
 			nodes.Compare(  # test
 				nodes.Const(name),
