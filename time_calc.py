@@ -77,7 +77,7 @@ class Time:
 
 		# Time(5, 4, 0) -> Time(5, 4)
 		# Time(0, 0, 0) -> Time()
-		no_trailing_zeros = rstrip([t.hours, t.minutes, t.seconds], lambda x: x == 0)
+		no_trailing_zeros = rstrip((0).__eq__, [t.hours, t.minutes, t.seconds])
 		kwargs = ''
 		if t.days:
 			kwargs = f'days={t.days!r}'

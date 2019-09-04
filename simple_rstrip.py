@@ -3,14 +3,14 @@
 
 import typing
 
-def rstrip_in_place(xs: typing.List[typing.T], predicate: typing.Callable[[typing.T], bool]) -> None:
+def rstrip_in_place(predicate: typing.Callable[[typing.T], bool], xs: typing.List[typing.T]) -> None:
 	"""remove elements from the right of xs until predicate no longer holds"""
 	while xs and predicate(xs[-1]):
 		xs.pop()
 
-def rstrip(xs: typing.List[typing.T], predicate: typing.Callable[[typing.T], bool]) -> typing.List[typing.T]:
-	copied = xs.copy()
-	rstrip_in_place(copied, predicate)
+def rstrip(predicate: typing.Callable[[typing.T], bool], xs: typing.Iterable[typing.T]) -> typing.List[typing.T]:
+	copied = list(xs)
+	rstrip_in_place(predicate, copied)
 	return copied
 
 def test():
