@@ -3,7 +3,6 @@ import ast
 TEMPLATE = """
 def __func__():
 	pass
-	{}
 """
 
 def loads(s):
