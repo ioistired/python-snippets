@@ -76,7 +76,7 @@ def parse_args(command_line):
 		return True, None, None
 
 	view_mode = '-v' in opts or '--view' in opts
-	filename = args[0] if args else None
+	filename = next((arg for arg in args if not arg.startswith('+')), None)
 	return False, view_mode, filename
 
 def replace_home(filename):
