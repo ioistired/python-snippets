@@ -8,7 +8,9 @@ def i18n_docstring(func):
 	try:
 		tree = ast.parse(src)
 	except IndentationError:
-		tree = ast.parse('class Foo:\n' + src)
+		# this works regardless of how indented the function is
+		# because python does not care about how wide an indentation is, as long as it is consistent
+		tree = ast.parse('class IndentFix:\n' + src)
 		tree = tree.body[0].body[0]  # ClassDef -> FunctionDef
 	else:
 		tree = tree.body[0]  # FunctionDef
