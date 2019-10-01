@@ -8,4 +8,4 @@ def parse_header(h):
 	m = EmailMessage()
 	m['content-type'] = h
 	l = m.get_params()
-	return ('='.join(l[0]), dict(l[1:]))
+	return l[0][0], dict(l[1:])
