@@ -18,17 +18,15 @@ class Time:
 		- a duration of time, such as 23 hours, 34 minutes, and 3 seconds
 	"""
 
-	__slots__ = ('days', 'hours', 'minutes', 'seconds')
+	__slots__ = ('_days', '_hours', '_minutes', '_seconds')
 
 	def __new__(cls, hours: _Integral = 0, minutes: _Integral = 0, seconds: _Real = 0, *, days: _Integral = 0):
 		self = super().__new__(cls)
 
-		# a silly way to achieve immutability
-		# we do this because our __setattr__ denies access
-		super(cls, self).__setattr__('days', days)
-		super(cls, self).__setattr__('hours', hours)
-		super(cls, self).__setattr__('minutes', minutes)
-		super(cls, self).__setattr__('seconds', seconds)
+		self._days = days
+		self._hours = hours
+		self._minutes = minutes
+		self._seconds = seconds
 
 		return self
 
@@ -100,7 +98,11 @@ class Time:
 		t = self.normalize()
 		return hash((t.days, t.hours, t.minutes, t.seconds))
 
-	def __setattr__(self, name, *_):
-		raise TypeError(f'{type(self).__qualname__} objects are immutable')
+	for attr_name in __slots__:
+		def prop(self, name=attr_name):
+			return getattr(self, name)
+		public_name = attr_name.lstrip('_')
+		prop.__name__ = public_name
+		vars()[public_name] = property(prop)
 
-	__delattr__ = __setattr__
+	del attr_name, public_name, prop
