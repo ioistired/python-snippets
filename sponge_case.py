@@ -9,7 +9,7 @@ import operator
 def apply(f, *args, **kwargs): return f(*args, **kwargs)
 
 def flip(f):
-	def flipped(x, f): return f(x)
+	def flipped(x, y): return f(y, x)
 	return flipped
 
 def compose(*funcs):
