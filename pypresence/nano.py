@@ -91,9 +91,8 @@ def on_not_running():
 def main():
 	while True:
 		try:
-			# get the first process instead of the last
-			# i usually open up long term files first, so this makes more sense
-			nano = get_nano_processes()[0]
+			# get the last process as it's more likely to be what I'm currently editing
+			nano = get_nano_processes()[-1]
 		except IndexError:
 			on_not_running()
 			continue
