@@ -1,3 +1,8 @@
+"""
+Implementation of a mutable float.
+CPython only. May create nasal dragons.
+"""
+
 import ctypes
 import operator
 import sys
