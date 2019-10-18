@@ -15,11 +15,10 @@ import ast
 import inspect
 import sys
 import typing
+import types
 
 import import_expression
 
-from jishaku.functools import AsyncSender
-from jishaku.repl.scope import Scope
 from jishaku.repl.walkers import KeywordTransformer
 
 REPL_CODE = """
@@ -94,13 +93,14 @@ class ReplCodeExecutor:  # pylint: disable=too-few-public-methods
         print(total)
     """
 
-    def __init__(self, code: typing.Union[ast.Module, str], globals=None, locals=None):
-        self.code = wrap_code(code)
+    def __init__(self, code: typing.Union[ast.Module, str, types.CodeType], globals=None, locals=None):
+        self.code = code if isinstance(code, types.CodeType) else wrap_code(code)
         self.globals = {} if globals is None else globals
         self.locals = self.globals if locals is None else locals
 
     def __iter__(self):
-        exec(compile(self.code, '<repl>', 'exec'), self.globals, self.locals)  # pylint: disable=exec-used
+        code = self.code if isinstance(self.code, types.CodeType) else compile(self.code, '<repl>', 'exec')
+        exec(code, self.globals, self.locals)  # pylint: disable=exec-used
         func_def = self.locals.get('_repl_func') or self.globals['_repl_func']
 
         return self.traverse(func_def)
