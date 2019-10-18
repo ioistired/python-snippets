@@ -8,11 +8,10 @@ A clone of https://github.com/Russell91/pythonpy with less ugly code and support
 
 import argparse
 import sys
-from collections import deque
+import import_expression
 
 from more_itertools import islice_extended
 
-from repl_executor import wrap_code, ReplCodeExecutor
 from without_trailing import without_trailing
 
 version_info = 'Pythonpy Clone {}\nPython {}'.format(__version__, sys.version)
@@ -47,22 +46,22 @@ def main():
 		sys.exit(1)
 
 	if args.pre_cmd:
-		exhaust(ReplCodeExecutor(args.pre_cmd))
+		import_expression.exec(args.pre_cmd)
 
 	if not args.expression and args.post_cmd:
-		exhaust(ReplCodeExecutor(args.post_cmd))
+		import_expression.exec(args.post_cmd)
 		sys.exit(0)
 
 	stdin = without_trailing(map(str.rstrip, sys.stdin), trailing='')  # ignore trailing newline
+	code = import_expression.compile(args.expression, '<pythonpy expression>', 'eval')
 
 	if args.list_of_stdin:
 		l = list(stdin)
-		it = ReplCodeExecutor(args.expression, dict(l=l))
+		it = [import_expression.eval(code, dict(l=l))]
 	elif args.lines_of_stdin:
-		code = compile(wrap_code(args.expression), '<pythonpy expression>', 'exec')  # prevent re-compilation every iteration
-		it = (x for line in stdin for x in ReplCodeExecutor(code, dict(x=line)))
+		it = (import_expression.eval(code, dict(x=line)) for line in stdin)
 	else:
-		it = ReplCodeExecutor(args.expression)
+		it = [import_expression.eval(code)]
 
 	for x in it:
 		if x is None:
@@ -77,7 +76,7 @@ def main():
 				print(x)
 
 	if args.post_cmd:
-		exhaust(ReplCodeExecutor(args.post_cmd))
+		import_expression.exec(args.post_cmd)
 
 if __name__ == '__main__':
 	main()
