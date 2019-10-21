@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 __version__ = '0.0.1'
+__license__ = 'BlueOak-1.0.0'
 
 """
 A clone of https://github.com/Russell91/pythonpy with less ugly code and supporting import expressions (e.g. sys!.version)
