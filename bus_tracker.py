@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
+import datetime as dt
+import functools
 import sys
 import os
 from collections import defaultdict
 
-from bot_bin.misc import natural_join
 import requests
+from bot_bin.misc import natural_join
 
 try:
 	params = dict(key=os.environ['CTA_BUS_KEY'], stpid=sys.argv[1], format='json')
@@ -27,10 +29,24 @@ if 'error' in data:
 		err(error)
 	sys.exit(2)
 
-route_predictions = defaultdict(list)
+route_predictions = defaultdict(lambda: defaultdict(list))
+
+parse_time = functools.partial(dt.datetime.strptime, '%Y%m%d %H:%M')
 
 for prediction in data['prd']:
-	route_predictions[prediction['rt']].append(prediction['prdctdn'])
+	if prediction['dly']:
+		eta = (parse_time(prediction['prdtm']) - parse_time(prediction['tmstmp'])).total_seconds() / 60
+		eta = f'DELAYED (scheduled in {eta} minutes)'
+	else:
+		eta = prediction['prdctdn']
+	route_predictions[prediction['stpnm']][prediction['rt'], prediction['des']].append(eta)
 
-for route, predictions in route_predictions.items():
-	print(f'{route}: {natural_join(predictions)} minutes')
+first_line = True
+for stop_name, routes in route_predictions.items():
+	if not first_line: print()  # put a blank line before each stop
+	print(stop_name)
+	print('─' * len(stop_name))
+	first_line = False
+
+	for (route, dest), predictions in routes.items():
+		print(f'{route} to {dest}: {natural_join(predictions)} minutes')
