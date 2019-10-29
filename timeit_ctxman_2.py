@@ -6,7 +6,7 @@ import time
 from mutable_float import MutableFloat
 
 class timeit(contextlib.AbstractContextManager):
-	"""contextman that times execution of its body."""
+	"""re-entrant context manager that times execution of its body."""
 
 	def __init__(self):
 		self.times = []
@@ -22,9 +22,15 @@ class timeit(contextlib.AbstractContextManager):
 		elapsed.set(t1 - t0)
 
 def test():
-	with timeit() as elapsed:
-		time.sleep(2)
-	assert int(elapsed) == 2
+	timer = timeit()
+	with timer as elapsed1:
+		time.sleep(1/2)
+		with timer as elapsed2:
+			time.sleep(1/2)
+		time.sleep(1/2)
+
+	assert int(elapsed1) == 1
+	assert round(elapsed2, 1) == 0.5
 
 if __name__ == '__main__':
 	test()
