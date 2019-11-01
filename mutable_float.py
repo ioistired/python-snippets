@@ -24,3 +24,5 @@ class MutableFloat(float):
 		vars()[f'__i{op.__name__.strip("_")}__'] = meth
 
 	del op, meth
+
+	__hash__ = None
