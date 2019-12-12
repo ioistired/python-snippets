@@ -16,7 +16,11 @@ def merge_safety_numbers(a, b):
 	a_fingerprints = set(map(str.strip, halve(a)))
 	b_fingerprints = set(map(str.strip, halve(b)))
 
-	return ' '.join(sorted(a_fingerprints.symmetric_difference(b_fingerprints)))
+	# a_fingerprints | b_fingerprints = all three parties' fingerprint (mine, alice's, and bob's)
+	# a_fingerprints & b_fingerprints = {my fingerprint}
+	a_b_fingerprints = a_fingerprints.symmetric_difference(b_fingerprints)
+	assert len(a_b_fingerprints) == 2
+	return ' '.join(sorted(a_b_fingerprints))
 
 def test_merge_safety_numbers():
 	assert merge_safety_numbers('823 456 987 654', '767 530 823 456') == '767 530 987 654'
