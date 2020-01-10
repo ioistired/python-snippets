@@ -17,7 +17,7 @@ def compose(*funcs):
 	return composed
 
 def sponge_case_1(s):
-	return ''.join(itertools.starmap(apply, zip(itertools.cycle((str.lower, str.upper)), s)))
+	return ''.join(map(apply, itertools.cycle((str.lower, str.upper)), s))
 
 def sponge_case_2(s):
 	return ''.join((str.lower, str.upper)[i % 2](c) for i, c in enumerate(s))
