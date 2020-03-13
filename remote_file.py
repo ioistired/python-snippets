@@ -10,7 +10,7 @@ class RemoteFile(typing.BinaryIO):
 		self.pos = 0
 
 	def _fetch_content_length(self):
-		self._content_length = self.session.head(self.url).headers['Content-Length']
+		self._content_length = int(self.session.head(self.url).headers['Content-Length'])
 
 	def read(self, size=-1):
 		# TODO support If-Range
