@@ -14,9 +14,6 @@ class RemoteFile(typing.BinaryIO):
 
 	def read(self, size=-1):
 		# TODO support If-Range
-		if size == -1 and self._content_length is None:
-			self._fetch_content_length()
-
 		start = self.tell()
 		end = '' if size == -1 else start + size - 1
 		range_header = f'bytes={start}-{end}'
