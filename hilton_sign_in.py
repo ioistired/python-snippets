@@ -13,11 +13,9 @@ def exit():
 driver = selenium.webdriver.Firefox()
 # for some reason, detectportal.firefox.com and connectivitycheck.gstatic.com are not blocked
 # therefore, they cannot be used to detect connectivity
-# we instead visit a site that is known not to ever have TLS, not because the owner
-# wants us to detect our connectivity, but because the owner is a giant faggot
-# I tried to use yahoo.com here, but it takes too long to load
-driver.get('http://www.n-gate.com')
-if 'n-gate.com' in urllib.parse.urlparse(driver.current_url).netloc:
+# we instead visit another site that is known not to ever have TLS
+driver.get('http://neverssl.com')
+if 'neverssl.com' in urllib.parse.urlparse(driver.current_url).netloc:
 	exit()
 
 driver.find_element_by_css_selector('label[for="promo_button"]').click()
