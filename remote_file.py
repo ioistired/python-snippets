@@ -48,6 +48,8 @@ class RemoteFile(typing.BinaryIO):
 			self.pos = old_pos
 			raise OSError('new position would be negative')
 
+		return self.pos
+
 	def __repr__(self):
 		return f'{type(self).__qualname__}({self.url!r})'
 
