@@ -7,24 +7,37 @@ class RemoteFile(typing.BinaryIO):
 		self.url = url
 		self.session = requests.Session()
 		self._content_length = None
+		self._if_range_header = None
 		self.pos = 0
 
 	def _fetch_content_length(self):
-		self._content_length = int(self.session.head(self.url).headers['Content-Length'])
+		r = self.session.head(self.url)
+		self._set_if_range_header(r)
+		self._content_length = int(r.headers['Content-Length'])
+
+	def _set_if_range_header(self, r):
+		if self._if_range_header is None:
+			self._if_range_header = r.headers.get('ETag', r.headers.get('Last-Modified'))
 
 	def read(self, size=-1):
-		# TODO support If-Range
 		start = self.tell()
 		end = '' if size == -1 else start + size - 1
 		range_header = f'bytes={start}-{end}'
 
-		r = self.session.get(self.url, headers={'Range': range_header})
+		headers = {'Range': range_header}
+		if self._if_range_header is not None:
+			headers['If-Range'] = self._if_range_header
+
+		print(headers)
+		r = self.session.get(self.url, headers=headers)
 		if r.status_code == 200:
 			raise OSError('range requested but the whole file was returned')
 		elif r.status_code == 416:
 			raise OSError('requested range not satisfiable')
 		elif r.status_code != 206:  # Partial content
 			raise OSError('got unexpected status code', r.status_code)
+
+		self._set_if_range_header(r)
 
 		buf = r.content
 		self.pos += len(buf)
