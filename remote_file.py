@@ -28,7 +28,6 @@ class RemoteFile(typing.BinaryIO):
 		if self._if_range_header is not None:
 			headers['If-Range'] = self._if_range_header
 
-		print(headers)
 		r = self.session.get(self.url, headers=headers)
 		if r.status_code == 200:
 			raise OSError('range requested but the whole file was returned')
