@@ -3,6 +3,9 @@
 import textwrap
 
 def dedent_all(f):
+	"""Dedents all constant strings in the decorated function.
+	DO NOT use this with functions containing f-strings.
+	"""
 	consts = list(f.__code__.co_consts)
 	for i, const in enumerate(consts):
 		if type(const) is str:
