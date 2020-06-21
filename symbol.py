@@ -11,7 +11,7 @@ class _SymbolMeta(type):
 			return rv
 
 class Symbol(metaclass=_SymbolMeta):
-	"""brings LISP style symbols to Python.
+	"""Brings LISP style symbols to Python.
 
 	Symbol.x is an interned object. You can use it as a replacement for sys.intern('x') or object() in argument
 	defaults. Symbol('x') also works.
@@ -19,7 +19,7 @@ class Symbol(metaclass=_SymbolMeta):
 
 	_cache = {}
 
-	def __init__(self, key):
+	def __init__(self, key: str):
 		self.key = key
 
 	def __hash__(self):
