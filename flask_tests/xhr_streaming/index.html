@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset=utf-8>
+	<title>XHR Streaming Example</title>
+</head>
+<body>
+	<ul id=results>
+	</ul>
+	<script>
+		let xhr = new XMLHttpRequest();
+		xhr.open('GET', '/stream');
+		xhr.seenChars = 0;
+
+		let resultsEl = document.getElementById('results');
+		let imageId;
+
+		xhr.addEventListener('progress', (e) => {
+			let row = document.createElement('li');
+			let line = xhr.responseText.substr(xhr.seenChars);
+			row.innerText = line;
+			if (line.startsWith('image-id: ')) {
+				imageId = line.substr('image-id: '.length);
+			}
+			resultsEl.appendChild(row);
+			xhr.seenChars = xhr.responseText.length;
+		});
+
+		xhr.addEventListener('load', () => {
+			let done = document.createElement('p');
+			let link = document.createElement('a');
+			link.href = `/image/${imageId}`;
+			link.innerText = 'View your created design.';
+			document.body.appendChild(link);
+		});
+
+		xhr.send();
+	</script>
+</body>
+</html>
