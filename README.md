@@ -7,7 +7,7 @@ at least some of them would be interesting to others. Here they are.
 ## License
 
 To the extent possible under law,
-Benjamin Mintz has waived all copyright and related or neighboring rights to these snippets.
+io mintz has waived all copyright and related or neighboring rights to these snippets.
 This work is published from: United States.
 
 For the full legal code, see https://creativecommons.org/publicdomain/zero/1.0/legalcode.
