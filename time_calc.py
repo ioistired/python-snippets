@@ -7,6 +7,7 @@ my attempt at doing a four-function time calculator
 maybe use the datetime module instead
 """
 
+from datetime import datetime as _datetime
 from numbers import Integral as _Integral, Real as _Real
 import operator as _operator
 
@@ -36,6 +37,11 @@ class Time:
 		hours, minutes = divmod(minutes, 60)
 		days, hours = divmod(hours, 24)
 		return cls(int(hours), int(minutes), seconds, days=int(days))
+
+	@classmethod
+	def now(cls, tz=None):
+		t = _datetime.now(tz).time()
+		return cls(t.hour, t.minute, t.second)
 
 	def total_seconds(self) -> _Real:
 		return 60**2 * (self.hours + 24 * self.days) + 60 * self.minutes + self.seconds
