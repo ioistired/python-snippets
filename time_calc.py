@@ -7,9 +7,9 @@ my attempt at doing a four-function time calculator
 maybe use the datetime module instead
 """
 
-from datetime import datetime as _datetime
-from numbers import Integral as _Integral, Real as _Real
-import operator as _operator
+__all__ = ['Time']
+
+from numbers import Integral, Real
 
 from simple_rstrip import rstrip
 
@@ -21,7 +21,7 @@ class Time:
 
 	__slots__ = ('_days', '_hours', '_minutes', '_seconds')
 
-	def __new__(cls, hours: _Integral = 0, minutes: _Integral = 0, seconds: _Real = 0, *, days: _Integral = 0):
+	def __new__(cls, hours: Integral = 0, minutes: Integral = 0, seconds: Real = 0, *, days: Integral = 0):
 		self = super().__new__(cls)
 
 		self._days = days
@@ -32,18 +32,13 @@ class Time:
 		return self
 
 	@classmethod
-	def from_seconds(cls, seconds: _Real):
+	def from_seconds(cls, seconds: Real):
 		minutes, seconds = divmod(seconds, 60)
 		hours, minutes = divmod(minutes, 60)
 		days, hours = divmod(hours, 24)
 		return cls(int(hours), int(minutes), seconds, days=int(days))
 
-	@classmethod
-	def now(cls, tz=None):
-		t = _datetime.now(tz).time()
-		return cls(t.hour, t.minute, t.second)
-
-	def total_seconds(self) -> _Real:
+	def total_seconds(self) -> Real:
 		return 60**2 * (self.hours + 24 * self.days) + 60 * self.minutes + self.seconds
 
 	def __float__(self):
@@ -66,14 +61,14 @@ class Time:
 		"""implements self + other"""
 		return self.from_seconds(self.total_seconds() + other.total_seconds())
 
-	def __mul__(self, other: _Real):
+	def __mul__(self, other: Real):
 		"""implements self * other"""
 		return self.from_seconds(self.total_seconds() * other)
 
-	def __truediv__(self, other: _Real):
+	def __truediv__(self, other: Real):
 		return self.from_seconds(self.total_seconds() / other)
 
-	def __floordiv__(self, other: _Real):
+	def __floordiv__(self, other: Real):
 		return self.from_seconds(self.total_seconds() // other)
 
 	def __repr__(self):
