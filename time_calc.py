@@ -57,6 +57,11 @@ class Time:
 		"""
 		return self.from_seconds(self.total_seconds())
 
+	def __eq__(self, other):
+		if not isinstance(other, type(self)):
+			return False
+		return self.total_seconds() == other.total_seconds()
+
 	def __sub__(self, other: 'Time'):
 		"""implements self - other"""
 		# subtraction and addition require that *other* be typed
