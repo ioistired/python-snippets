@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-
-import contextlib
+#!/usr/bin/env python
 
 class _SymbolMeta(type):
 	def __getattr__(cls, key):
