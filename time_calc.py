@@ -82,12 +82,18 @@ class Time:
 	def __floordiv__(self, other: Real):
 		return self.from_seconds(self.total_seconds() // other)
 
+	def __neg__(self):
+		return self.from_seconds(-self.total_seconds())
+
+	def __pos__(self): return self
+
 	def __repr__(self):
 		t = self.normalize()
 
 		# Time(5, 4, 0) -> Time(5, 4)
 		# Time(0, 0, 0) -> Time()
-		no_trailing_zeros = rstrip((0).__eq__, [t.hours, t.minutes, t.seconds])
+		# this lambda is not equivalent to (0).__eq__, because that returns NotImplemented on mismatched types
+		no_trailing_zeros = rstrip(lambda x: x == 0, [t.hours, t.minutes, t.seconds])
 		kwargs = ''
 		if t.days:
 			kwargs = f'days={t.days!r}'
